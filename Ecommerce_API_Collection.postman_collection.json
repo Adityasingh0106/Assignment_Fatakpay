@@ -1,0 +1,450 @@
+{
+	"info": {
+		"_postman_id": "ecommerce-13-apis",
+		"name": "E-Commerce Backend - 13 Core APIs",
+		"description": "Complete collection for E-Commerce Backend API\n\n**13 Core APIs:**\n- 4 Authentication & User APIs\n- 5 Product Management APIs\n- 2 Wallet APIs\n- 1 Transaction History API\n- 1 Purchase API\n\n**Features:**\n- Automatic token management\n- Service layer architecture\n- Atomic transactions\n- Role-based permissions\n\n**Setup:**\n1. Import collection\n2. Import environment\n3. Run 'Register Customer'\n4. Token auto-saved - start testing!",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Authentication & Users",
+			"item": [
+				{
+					"name": "1. Register Customer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.data && jsonData.data.tokens) {",
+									"        pm.environment.set(\"access_token\", jsonData.data.tokens.access);",
+									"        pm.environment.set(\"refresh_token\", jsonData.data.tokens.refresh);",
+									"        console.log(\"✓ Customer tokens saved\");",
+									"    }",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"rahul_sharma\",\n  \"email\": \"rahul.sharma@email.com\",\n  \"password\": \"SecurePass@123\",\n  \"password_confirm\": \"SecurePass@123\",\n  \"first_name\": \"Rahul\",\n  \"last_name\": \"Sharma\",\n  \"phone_number\": \"+919876543210\",\n  \"role\": \"CUSTOMER\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users/register/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users", "register", ""]
+						},
+						"description": "**API 1/13:** Register new customer\n\n**Returns:** User data + JWT tokens (auto-saved)\n\n**Notes:**\n- Wallet auto-created for customers\n- Token automatically saved to environment"
+					}
+				},
+				{
+					"name": "2. Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.data && jsonData.data.tokens) {",
+									"        pm.environment.set(\"access_token\", jsonData.data.tokens.access);",
+									"        pm.environment.set(\"refresh_token\", jsonData.data.tokens.refresh);",
+									"        console.log(\"✓ Login successful, tokens saved\");",
+									"    }",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"rahul_sharma\",\n  \"password\": \"SecurePass@123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users/login/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users", "login", ""]
+						},
+						"description": "**API 2/13:** Login with credentials\n\n**Returns:** User data + JWT tokens (auto-saved)"
+					}
+				},
+				{
+					"name": "3. Get Profile",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/users/profile/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users", "profile", ""]
+						},
+						"description": "**API 3/13:** View current user profile\n\n**Auth:** Bearer token required"
+					}
+				},
+				{
+					"name": "4. Update Profile",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"first_name\": \"rahul\",\n  \"last_name\": \"sharma\",\n  \"phone_number\": \"+9876543210\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users/profile/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users", "profile", ""]
+						},
+						"description": "**API 4/13:** Update user profile\n\n**Auth:** Bearer token required"
+					}
+				}
+			],
+			"description": "**4 APIs** for user authentication and profile management"
+		},
+		{
+			"name": "2. Products",
+			"item": [
+				{
+					"name": "5. List All Products",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/products/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "products", ""]
+						},
+						"description": "**API 5/13:** List all products\n\n**Auth:** Public endpoint (no token needed)\n\n**Returns:** Array of products"
+					}
+				},
+				{
+					"name": "6. Create Product (Admin)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// For admin testing, register admin first"
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{admin_token}}"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Wireless Earbuds\",\n  \"description\": \"Premium wireless earbuds with noise cancellation\",\n  \"price\": 149.99,\n  \"stock_quantity\": 100\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/products/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "products", ""]
+						},
+						"description": "**API 6/13:** Create new product\n\n**Auth:** Admin token required\n\n**Note:** Use admin_token variable"
+					}
+				},
+				{
+					"name": "7. Get Product Details",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/products/1/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "products", "1", ""]
+						},
+						"description": "**API 7/13:** View single product details\n\n**Auth:** Public endpoint"
+					}
+				},
+				{
+					"name": "8. Update Product (Admin)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{admin_token}}"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"price\": 899.99,\n  \"stock_quantity\": 75\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/products/1/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "products", "1", ""]
+						},
+						"description": "**API 8/13:** Update product\n\n**Auth:** Admin token required"
+					}
+				},
+				{
+					"name": "9. Delete Product (Admin)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{admin_token}}"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/products/16/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "products", "16", ""]
+						},
+						"description": "**API 9/13:** Delete product\n\n**Auth:** Admin token required"
+					}
+				}
+			],
+			"description": "**5 APIs** for product management\n- 2 public (list, view)\n- 3 admin-only (create, update, delete)"
+		},
+		{
+			"name": "3. Wallet",
+			"item": [
+				{
+					"name": "10. Get Wallet Balance",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/wallet/balance/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "wallet", "balance", ""]
+						},
+						"description": "**API 10/13:** Get current wallet balance\n\n**Auth:** Customer token required\n\n**Returns:** Current balance"
+					}
+				},
+				{
+					"name": "11. Add Funds",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"amount\": 2000.00,\n  \"description\": \"Adding funds for shopping\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/wallet/add-funds/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "wallet", "add-funds", ""]
+						},
+						"description": "**API 11/13:** Add money to wallet\n\n**Auth:** Customer token required\n\n**Features:**\n- Atomic transaction\n- Creates CREDIT transaction record\n- Updates balance"
+					}
+				}
+			],
+			"description": "**2 APIs** for wallet operations"
+		},
+		{
+			"name": "4. Transactions",
+			"item": [
+				{
+					"name": "12. Get Transaction History",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/wallet/transactions/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "wallet", "transactions", ""]
+						},
+						"description": "**API 12/13:** View complete transaction history\n\n**Auth:** Customer token required\n\n**Returns:** All transactions (CREDIT and DEBIT)"
+					}
+				}
+			],
+			"description": "**1 API** for viewing transaction history"
+		},
+		{
+			"name": "5. Purchase",
+			"item": [
+				{
+					"name": "13. Purchase Product",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"product_id\": 1,\n  \"quantity\": 2\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/orders/purchase/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "orders", "purchase", ""]
+						},
+						"description": "**API 13/13:** Buy a product (ATOMIC OPERATION)\n\n**Auth:** Customer token required\n\n**Atomic Transaction:**\n1. Validates stock availability\n2. Checks wallet balance\n3. Deducts from wallet\n4. Reduces stock\n5. Creates order record\n6. Records DEBIT transaction\n\n**All operations succeed together or rollback**\n\n**Returns:** Order + Transaction + Remaining balance"
+					}
+				}
+			],
+			"description": "**1 API** for purchasing products with atomic transaction"
+		},
+		{
+			"name": "Extra - Admin Setup",
+			"item": [
+				{
+					"name": "Register Admin User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.data && jsonData.data.tokens) {",
+									"        pm.environment.set(\"admin_token\", jsonData.data.tokens.access);",
+									"        console.log(\"✓ Admin token saved\");",
+									"    }",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"priya_admin\",\n  \"email\": \"priya.verma@email.com\",\n  \"password\": \"AdminPass@123\",\n  \"password_confirm\": \"AdminPass@123\",\n  \"first_name\": \"Priya\",\n  \"last_name\": \"Verma\",\n  \"phone_number\": \"+919123456789\",\n  \"role\": \"ADMIN\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users/register/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users", "register", ""]
+						},
+						"description": "**Helper:** Register admin for testing admin endpoints\n\n**Token** saved as `admin_token`"
+					}
+				}
+			],
+			"description": "**Helper requests** for setting up admin user (not part of core 13)"
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://127.0.0.1:8000"
+		}
+	]
+}
+
+
+
